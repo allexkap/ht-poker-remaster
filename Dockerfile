@@ -4,5 +4,5 @@ RUN apt-get -q -y install curl zip unzip git
 RUN curl -O -J -L -u ae4e379cc067812bf4e1130cb86d726e5f32de00:x-oauth-basic https://github.com/NeoIsALie/ht-poker/archive/main.zip
 RUN unzip ht-poker-main.zip
 WORKDIR /ht-poker-main
-CMD ["chmod", "+x", "prepare.sh"]
-CMD ["chmod", "+x", "run.sh"]
+RUN chmod+x prepare.sh
+RUN chmod+x run.sh
