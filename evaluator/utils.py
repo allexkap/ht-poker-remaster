@@ -59,15 +59,35 @@ def validate_game(args):
 
 def cards_pretty_print(hands, ranks):
     size = len(ranks)
+    start, end = 0, 0
     string = ''
     for i in range(size - 1):
-        string += ''.join(hands[i])
+        string += hands[i]
         if ranks[i] == ranks[i + 1]:
             string += '='
         else:
             string += ' '
-    string += ''.join(hands[-1])
+    string += hands[-1]
     print(string)
+
+
+def partially_sort(hands, ranks):
+    size = len(hands)
+    for i in range(size - 1):
+        if ranks[i] == ranks[i + 1]:
+            start = i
+            for j in range(i + 1, size):
+                if ranks[j] > ranks[j + 1]:
+                    end = j
+                    break
+            tmp = sorted(hands[start:end + 1])
+            if start == 0 and end == 1:
+                hands[0] = tmp[0]
+                hands[1] = tmp[1]
+            else:
+                for k in range(start, end + 1):
+                    hands[k] = tmp[k - 1]
+    return hands
 
 
 def play(args):
@@ -78,7 +98,10 @@ def play(args):
         hands.append(args['board'])
         ranks = list(map(lambda x: evaluator.evaluate_cards(*x), hands))
         hands.sort(key=lambda x: evaluator.evaluate_cards(*x), reverse=True)
+        hands = [''.join(hand) for hand in hands]
     else:
         hands.sort(key=lambda x: evaluator.evaluate_cards(*args['board'], *x), reverse=True)
         ranks = list(map(lambda x: evaluator.evaluate_cards(*args['board'], *x), hands))
+        hands = [''.join(hand) for hand in hands]
+        hands = partially_sort(hands, ranks)
     cards_pretty_print(hands, ranks)
