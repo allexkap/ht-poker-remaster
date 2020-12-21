@@ -23,8 +23,8 @@ docker build -t poker:latest .
 docker run -i -t -p 5902:5902 --name "poker" poker:latest bash
 ```
 
-* Run prepare.sh to install python3.8:
-```docker exec -it poker ./prepare.sh```
+* Run prepare.sh inside container to install python3.8:
+```./prepare.sh```
 
 * Run run.sh using (where <input> and <output> are input and output file names respectively):
-```docker exec -it poker ./run.sh < <input>.txt  > <output>.txt```
+```./run.sh < <input>.txt  > <output>.txt```
