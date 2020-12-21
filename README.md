@@ -7,6 +7,7 @@ Script supports three game types: texas-holdem, omaha-holdem, five-card-draw.How
 
 ```
 FROM ubuntu:latest
+RUN apt-get update
 RUN apt-get -q -y install curl zip unzip git
 RUN curl -O -J -L -u <your-token>:x-oauth-basic https://github.com/NeoIsALie/ht-poker/archive/main.zip
 RUN unzip ht-poker-main.zip
