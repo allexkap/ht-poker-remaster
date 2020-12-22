@@ -17,6 +17,8 @@ COPY output.txt /ht-poker-main
 RUN chmod +x prepare.sh
 RUN chmod +x run.sh
 ```
+Otherwise, instead of COPY in Dockerfile use ``` docker cp foo.txt mycontainer:/foo.txt ``` and ```docker cp mycontainer:/foo.txt foo.txt``` where ```mycontainer``` is container ID.
+
 * Build image and run using:
 ```
 docker build -t poker:latest .
