@@ -81,12 +81,10 @@ def partially_sort(hands, ranks):
                     end = j
                     break
             tmp = sorted(hands[start:end + 1])
-            if start == 0 and end == 1:
-                hands[0] = tmp[0]
-                hands[1] = tmp[1]
-            else:
-                for k in range(start, end + 1):
-                    hands[k] = tmp[k - 1]
+            i, k = 0, start
+            while k < end + 1:
+                hands[k] = tmp[i]
+                i, k = i + 1, k + 1
     return hands
 
 
