@@ -73,13 +73,16 @@ def cards_pretty_print(hands, ranks):
 
 def partially_sort(hands, ranks):
     size = len(hands)
+    end = size
     for i in range(size - 1):
         if ranks[i] == ranks[i + 1]:
             start = i
-            for j in range(i + 1, size):
+            for j in range(i + 1, size - 1):
                 if ranks[j] > ranks[j + 1]:
                     end = j
                     break
+            if end == size:
+                end -= 1
             tmp = sorted(hands[start:end + 1])
             i, k = 0, start
             while k < end + 1:
@@ -94,9 +97,10 @@ def play(args):
     hands = list(map(lambda x: tuple(wrap(x, 2)), args['hands']))
     if args['game_type'] == 'five-card-draw':
         hands.append(args['board'])
-        ranks = list(map(lambda x: evaluator.evaluate_cards(*x), hands))
+        ranks = sorted(list(map(lambda x: evaluator.evaluate_cards(*x), hands)), reverse=True)
         hands.sort(key=lambda x: evaluator.evaluate_cards(*x), reverse=True)
         hands = [''.join(hand) for hand in hands]
+        hands = partially_sort(hands, ranks)
     else:
         hands.sort(key=lambda x: evaluator.evaluate_cards(*args['board'], *x), reverse=True)
         ranks = list(map(lambda x: evaluator.evaluate_cards(*args['board'], *x), hands))
