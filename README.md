@@ -1,8 +1,7 @@
-# ht-poker
+# Тестовые задания надо выполнять так, чтобы после тебя их меняли.
 ## Scala bootcamp hometask.
 
 Script supports three game types: texas-holdem, omaha-holdem, five-card-draw.How to run and build:
-* Generate personal access token ((account) Settings -> Developer settings)
 * Copy following to your Dockerfile:
 
 ```
