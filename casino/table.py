@@ -10,8 +10,6 @@ class Table:
         """
         Initialize new table
         :param players_num: number of poker players
-        :param hand_size: number of cards drawn to each player
-        :param deck_type: type of deck (full of 52 cards or short of 36)
         """
         self._deck = None
         self.players_num = players_num
