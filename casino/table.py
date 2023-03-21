@@ -50,13 +50,25 @@ class Table:
         return hand
 
     def deal_players(self) -> None:
+        """
+        Deal cards to players
+        :return:
+        """
         for player in self.players:
-            player.add_hand(self.generate_hand(self._deck, hand_size=4))
+            player.add_hand(self.generate_hand(self._deck, hand_size=5))
 
     def deal_community(self) -> None:
+        """
+        Deal community cards
+        :return:
+        """
         self._community_hand += self.generate_hand(self._deck, hand_size=5)
 
     def flush_game(self):
+        """
+        Clean table
+        :return:
+        """
         self._community_hand = ""
 
     # def add_to_community(self, game_stage: str) -> None:

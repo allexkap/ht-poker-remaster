@@ -44,5 +44,9 @@ class Simulator:
         return hands, ranks
 
     def show_status(self):
+        """
+        Show win probability from all simulations
+        :return:
+        """
         for player in self._table.players:
             print("Player {} with {} win probability".format(player.number, player.wins / self._simulations_num))

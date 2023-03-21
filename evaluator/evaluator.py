@@ -49,10 +49,8 @@ class Evaluator:
         ]
         self.suitbit_by_id = [0x1, 0x8, 0x40, 0x200, ] * 13
 
-    def evaluate_omaha_cards(self, c1, c2, c3, c4, c5, h1, h2, h3, h4):
+    def evaluate_omaha_cards(self, c1, c2, c3, c4, c5, h1, h2, h3, h4, h5):
         value_flush = 10000
-        suit_count_board = [0, 0, 0, 0]
-        suit_count_hole = [0, 0, 0, 0]
         suit_count_board = [0, 0, 0, 0, 0]
         suit_count_hole = [0, 0, 0, 0, 0]
 
@@ -66,12 +64,11 @@ class Evaluator:
         suit_count_hole[h2 & 0x3] += 1
         suit_count_hole[h3 & 0x3] += 1
         suit_count_hole[h4 & 0x3] += 1
-        # suit_count_hole[h5 & 0x3] += 1
+        suit_count_hole[h5 & 0x3] += 1
 
-        for i in range(4):
+        for i in range(5):
             if suit_count_board[i] >= 3 and suit_count_hole[i] >= 2:
-                suit_binary_board = [0, 0, 0, 0]
-                # suit_binary_board = [0, 0, 0, 0, 0]
+                suit_binary_board = [0, 0, 0, 0, 0]
 
                 suit_binary_board[c1 & 0x3] |= self.binaries_by_id[c1]
                 suit_binary_board[c2 & 0x3] |= self.binaries_by_id[c2]
@@ -79,14 +76,13 @@ class Evaluator:
                 suit_binary_board[c4 & 0x3] |= self.binaries_by_id[c4]
                 suit_binary_board[c5 & 0x3] |= self.binaries_by_id[c5]
 
-                suit_binary_hole = [0, 0, 0, 0]
-                # suit_binary_hole = [0, 0, 0, 0, 0]
+                suit_binary_hole = [0, 0, 0, 0, 0]
 
                 suit_binary_hole[h1 & 0x3] |= self.binaries_by_id[h1]
                 suit_binary_hole[h2 & 0x3] |= self.binaries_by_id[h2]
                 suit_binary_hole[h3 & 0x3] |= self.binaries_by_id[h3]
                 suit_binary_hole[h4 & 0x3] |= self.binaries_by_id[h4]
-                # suit_binary_hole[h5 & 0x3] |= self.binaries_by_id[h5]
+                suit_binary_hole[h5 & 0x3] |= self.binaries_by_id[h5]
 
                 if suit_count_board[i] == 3 and suit_count_hole[i] == 2:
                     value_flush = FLUSH[suit_binary_board[i] | suit_binary_hole[i]]
@@ -110,13 +106,13 @@ class Evaluator:
         quinary_board[(c2 >> 2)] += 1
         quinary_board[(c3 >> 2)] += 1
         quinary_board[(c4 >> 2)] += 1
-        # quinary_board[(c5 >> 2)] += 1
+        quinary_board[(c5 >> 2)] += 1
 
         quinary_hole[(h1 >> 2)] += 1
         quinary_hole[(h2 >> 2)] += 1
         quinary_hole[(h3 >> 2)] += 1
         quinary_hole[(h4 >> 2)] += 1
-        # quinary_hole[(h5 >> 2)] += 1
+        quinary_hole[(h5 >> 2)] += 1
 
         board_hash = hash_quinary(quinary_board, 13, 5)
         hole_hash = hash_quinary(quinary_hole, 13, 4)
