@@ -14,8 +14,6 @@ class Simulator:
     def simulate(self, deck_type: str = "full"):
         """
         Simulates a number of poker games
-        :param players_num: number of players at table
-        :param hand_size: max number of cards for player
         :param deck_type: number of cards in deck (52 for full, 36 for short)
         :return:
         """
