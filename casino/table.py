@@ -18,6 +18,7 @@ class Table:
             "river": 1
         }
         self.current_game_stage = "preflop"
+        self.game_stages_iter = iter(("flop", "turn", "river"))
 
     @staticmethod
     def generate_deck(deck_type: str) -> List[str]:
@@ -61,7 +62,8 @@ class Table:
         self._community_hand += self.generate_hand(self.deck, self.game_stages[game_stage])
 
     def new_round(self):
-        self.current_game_stage =
+        self.current_game_stage = next(self.game_stages_iter)
+        self.add_to_community(self.current_game_stage)
 
     @property
     def players_hands(self):
