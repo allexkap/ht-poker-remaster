@@ -2,16 +2,24 @@ import random
 from typing import List
 
 from casino.exceptions import DeckException
+from casino.player import Player
 
 
 class Table:
-    def __init__(self, players_num: int, hand_size: int, deck_type: str):
+    def __init__(self, players_num: int, hand_size: int, deck_type: str) -> None:
+        """
+        Initialize new table
+        :param players_num: number of poker players
+        :param hand_size: number of cards drawn to each player
+        :param deck_type: type of deck (full of 52 cards or short of 36)
+        """
         self.deck = self.generate_deck(deck_type)
         self.players_num = players_num
-        self._player_hands = {
-            player_num: self.generate_hand(self.deck, hand_size) for player_num in range(1, players_num + 1)
-        }
-        self._community_hand = ""
+        self.players = [
+            Player(number=player_num, hand=self.generate_hand(self.deck, hand_size))
+            for player_num in range(1, players_num + 1)
+        ]
+        self.community_hand = ""
         self.game_stages = {
             "flop": 3,
             "turn": 1,
@@ -59,24 +67,43 @@ class Table:
         :param game_stage: Current game stage (flop, turn or river)
         :return: extended community cards
         """
-        self._community_hand += self.generate_hand(self.deck, self.game_stages[game_stage])
+        self.community_hand += self.generate_hand(self.deck, self.game_stages[game_stage])
 
-    def new_round(self):
+    def new_round(self) -> None:
+        """
+        Trigger new round of game (draw cards to community)
+        :return:
+        """
         self.current_game_stage = next(self.game_stages_iter)
         self.add_to_community(self.current_game_stage)
 
     @property
-    def players_hands(self):
+    def players_hands(self) -> str:
+        """
+        Show all players' hands
+        :return: current players' hands
+        """
         situation = ""
-        for k, v in self._player_hands.items():
-            situation += "Player {} hand: {} \n".format(k, v)
+        for player in self.players:
+            situation += "Player {} hand: {} \n".format(player.number, player.hand)
         return situation
 
     @property
-    def community_hand(self):
-        return self._community_hand
+    def hands(self) -> List[str]:
+        return [player.hand for player in self.players]
 
     @property
-    def deck_size(self):
-        return len(self.deck)
+    def game_cards(self):
+        return self.community_hand + " " + " ".join([player.hand for player in self.players])
 
+    # @property
+    # def community_hand(self) -> str:
+    #     """
+    #     Show community cards
+    #     :return: community cards on current stage
+    #     """
+    #     return self._community_hand
+
+    @property
+    def deck_size(self) -> int:
+        return len(self.deck)

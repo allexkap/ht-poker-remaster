@@ -91,19 +91,11 @@ def partially_sort(hands, ranks):
     return hands
 
 
-def play(args):
+def play(community_hand, players_hands):
     evaluator = Evaluator()
-    args['board'] = tuple(wrap(args['board'], 2))
-    hands = list(map(lambda x: tuple(wrap(x, 2)), args['hands']))
-    if args['game_type'] == 'five-card-draw':
-        hands.append(args['board'])
-        ranks = sorted(list(map(lambda x: evaluator.evaluate_cards(*x), hands)), reverse=True)
-        hands.sort(key=lambda x: evaluator.evaluate_cards(*x), reverse=True)
-        hands = [''.join(hand) for hand in hands]
-        hands = partially_sort(hands, ranks)
-    else:
-        hands.sort(key=lambda x: evaluator.evaluate_cards(*args['board'], *x), reverse=True)
-        ranks = list(map(lambda x: evaluator.evaluate_cards(*args['board'], *x), hands))
-        hands = [''.join(hand) for hand in hands]
-        hands = partially_sort(hands, ranks)
-    cards_pretty_print(hands, ranks)
+    board = tuple(wrap(community_hand, 2))
+    hands = list(map(lambda x: tuple(wrap(x, 2)), players_hands))
+    hands.sort(key=lambda x: evaluator.evaluate_cards(*board, *x))
+    ranks = list(map(lambda x: evaluator.evaluate_cards(*board, *x), hands))
+    hands = [''.join(hand) for hand in hands]
+    return hands, ranks
