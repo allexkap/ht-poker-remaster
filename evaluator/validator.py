@@ -16,7 +16,8 @@ class Validator:
                 return False
         return True
 
-    def validate_input(self, string):
+    @staticmethod
+    def validate_input(string):
         ret = True
         pattern = re.compile("[AKQJT2-9][hdcs]")
         res = pattern.findall(string)
@@ -24,7 +25,8 @@ class Validator:
             ret = False
         return ret
 
-    def validate_unique(self, cards_list):
+    @staticmethod
+    def validate_unique(cards_list):
         return False if len(set(cards_list)) < len(cards_list) else True
 
     def validate_length(self, game_type, cards_list):
