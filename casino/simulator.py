@@ -6,9 +6,14 @@ from evaluator.evaluator import Evaluator
 
 
 class Simulator:
-    def __init__(self, players_num: int = 3, simulations_num: int = 100):
+    def __init__(self, players_num: int = 3, simulations_num: int = 10000):
+        """
+
+        :param players_num: number of players
+        :param simulations_num: number of simulations
+        """
         self._simulations_num = simulations_num
-        self._table = Table(players_num=players_num)
+        self.table = Table(players_num=players_num)
         self.evaluator = Evaluator()
 
     def simulate(self, deck_type: str = "full"):
@@ -18,14 +23,19 @@ class Simulator:
         :return:
         """
         for i in range(self._simulations_num):
-            self._table.generate_deck(deck_type)
-            self._table.deal_players()
-            self._table.deal_community()
-            hands, ranks = self.play(self._table.community_hand, self._table.hands)
-            for player in self._table.players:
+            self.table.generate_deck(deck_type)
+            self.table.set_stage_deck(self.table.hands)
+            self.table.set_stage_deck(self.table.start_community_hand)
+            self.table._community_hand = self.table.start_community_hand
+            rounds = self.table.set_stage_iterator(self.table.start_game_stage)
+            for round_num in range(rounds):
+                self.table.new_round()
+            print(f"Community hand: {self.table.community_hand}")
+            hands, ranks = self.play(self.table.community_hand, self.table.hands)
+            for player in self.table.players:
                 if player.hand == hands[0]:
                     player.wins_game()
-            self._table.flush_game()
+            self.table.flush_game()
 
     def play(self, community_hand: str, players_hands: List[str]):
         """
@@ -41,10 +51,10 @@ class Simulator:
         hands = [''.join(hand) for hand in hands]
         return hands, ranks
 
-    def show_status(self):
+    def show_status(self) -> None:
         """
         Show win probability from all simulations
         :return:
         """
-        for player in self._table.players:
-            print("Player {} with {} win probability".format(player.number, player.wins / self._simulations_num))
+        for player in self.table.players:
+            print("Player {} with {:2f} percent win probability".format(player.number, player.wins / 100))
