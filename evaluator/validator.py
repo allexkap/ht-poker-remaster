@@ -39,7 +39,7 @@ class Validator:
         ret, message = True, 'OK'
         curr_game = list(wrap(board, 2) + list(wrap(''.join(hands), 2)))
         if not (self.validate_input(board + ''.join(hands))):
-            ret, message = False, 'Error: Invalid cards input'
+            ret, message = False, 'Error: Invalid cards input: non-existent value or suit'
         elif not self.validate_hands("omaha5", hands):
             ret, message = False, 'Error: Invalid hand length'
         elif not (self.validate_unique(curr_game)):

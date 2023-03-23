@@ -57,4 +57,4 @@ class Simulator:
         :return:
         """
         for player in self.table.players:
-            print("Player {} with {:2f} percent win probability".format(player.number, player.wins / 100))
+            print("Player {} with {:.2f} percent win probability".format(player.number, player.wins / 100))
