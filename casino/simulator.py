@@ -3,6 +3,7 @@ from typing import List
 
 from casino.table import Table
 from evaluator.evaluator import Evaluator
+import itertools as it
 
 
 class Simulator:
@@ -22,10 +23,13 @@ class Simulator:
         :param deck_type: number of cards in deck (52 for full, 36 for short)
         :return:
         """
-        for i in range(self._simulations_num):
-            self.table.generate_deck(deck_type)
-            self.table.set_stage_deck(self.table.hands)
-            self.table.set_stage_deck(self.table.start_community_hand)
+        self.table.generate_deck(deck_type)
+        self.table.set_stage_deck(self.table.hands)
+        self.table.set_stage_deck(self.table.start_community_hand)
+        comb_num = 5-len(self.table.start_community_hand)//2
+        hands_cache = list(map(lambda x: tuple(wrap(x, 2)), self.table.hands))
+        for deck in it.combinations(self.table._deck, comb_num):
+            self.table._deck = list(deck)+["!"]
             self.table._community_hand = self.table.start_community_hand
             rounds = self.table.set_stage_iterator(self.table.start_game_stage)
             for round_num in range(rounds):
@@ -56,5 +60,6 @@ class Simulator:
         Show win probability from all simulations
         :return:
         """
+        total = sum(player.wins for player in self.table.players)
         for player in self.table.players:
-            print("Player {} with {:.2f} percent win probability".format(player.number, player.wins / 100))
+            print("Player {} with {:.2f} percent win probability".format(player.number, player.wins / total))
