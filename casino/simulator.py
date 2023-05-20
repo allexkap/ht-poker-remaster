@@ -1,9 +1,9 @@
 from textwrap import wrap
 from typing import List
+import itertools as it
 
 from casino.table import Table
 from evaluator.evaluator import Evaluator
-import itertools as it
 
 
 class Simulator:
@@ -35,13 +35,13 @@ class Simulator:
             for round_num in range(rounds):
                 self.table.new_round()
             print(f"Community hand: {self.table.community_hand}")
-            hands, ranks = self.play(self.table.community_hand, self.table.hands)
+            hands = self.play(self.table.community_hand, hands_cache)
             for player in self.table.players:
                 if player.hand == hands[0]:
                     player.wins_game()
             self.table.flush_game()
 
-    def play(self, community_hand: str, players_hands: List[str]):
+    def play(self, community_hand: str, players_hands):
         """
         Simulates one poker game
         :param community_hand: cards on table
@@ -49,11 +49,10 @@ class Simulator:
         :return: all players' hands with appropriate ranks (the less the rank the better hand is)
         """
         board = tuple(wrap(community_hand, 2))
-        hands = list(map(lambda x: tuple(wrap(x, 2)), players_hands))
+        hands = players_hands
         hands.sort(key=lambda x: self.evaluator.evaluate_cards(*board, *x))
-        ranks = list(map(lambda x: self.evaluator.evaluate_cards(*board, *x), hands))
         hands = [''.join(hand) for hand in hands]
-        return hands, ranks
+        return hands
 
     def show_status(self) -> None:
         """
@@ -62,4 +61,4 @@ class Simulator:
         """
         total = sum(player.wins for player in self.table.players)
         for player in self.table.players:
-            print("Player {} with {:.2f} percent win probability".format(player.number, player.wins / total))
+            print("Player {} with {:.2f} percent win probability".format(player.number, player.wins / total * 100))
