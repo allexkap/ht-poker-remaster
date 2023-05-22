@@ -1,15 +1,19 @@
 from textwrap import wrap
 import itertools as it
 from multiprocessing import Pool
+from ctypes import cdll
 
 from casino.table import Table
 from evaluator.evaluator import Evaluator
 
 
+c_evaluator = cdll.LoadLibrary('./evaluator/c_evaluator.so')
+
+
 
 class Simulator:
 
-    def __init__(self, players_num: int = 3, procces_num = 4):
+    def __init__(self, players_num = 4, procces_num = 4):
         self.players_num = players_num
         self.procces_num = procces_num
         self.table = Table(players_num=players_num)
@@ -18,16 +22,23 @@ class Simulator:
         self.cache = None
 
 
+    def convert_card(self, cards):
+        return set(self.evaluator.rank_map[card[0]]*4+self.evaluator.suit_map[card[1]] for card in cards)
+
+
     def simulate(self, deck_type: str = "full"):
         self.table.generate_deck(deck_type)
         self.table.set_stage_deck(self.table.hands)
         self.table.set_stage_deck(self.table.start_community_hand)
 
-        players_hands = tuple(map(lambda x: tuple(wrap(x, 2)), self.table.hands))
-        community_hand = tuple(wrap(self.table.start_community_hand, 2))
+        deck = {*range(51)}
+        players_hands = tuple(map(lambda x: self.convert_card(wrap(x, 2)), self.table.hands))
+        community_hand = self.convert_card(wrap(self.table.start_community_hand, 2))
+        for player_hand in players_hands: deck -= player_hand
+        deck -= community_hand
 
         comb_num = 5-len(self.table.start_community_hand)//2
-        all_decks = tuple(it.combinations(self.table._deck, comb_num))
+        all_decks = tuple(it.combinations(deck, comb_num))
         n = self.procces_num
         part = len(all_decks)//n
 
@@ -43,7 +54,7 @@ class Simulator:
         players_hands, community_hand = self.cache
         players_wins = [0] * len(players_hands)
         for deck_cards in deck_cards_set:
-            result = tuple(self.evaluator.evaluate_cards(*community_hand, *deck_cards, *player_hand) for player_hand in players_hands)
+            result = tuple(c_evaluator.evaluate_cards(*community_hand, *deck_cards, *player_hand) for player_hand in players_hands)
             winner_score = min(result)
             for i in range(len(result)):
                 if result[i] == winner_score:
