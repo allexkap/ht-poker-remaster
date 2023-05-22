@@ -7,7 +7,7 @@ from casino.table import Table
 from evaluator.evaluator import Evaluator
 
 
-c_evaluator = cdll.LoadLibrary('./evaluator/c_evaluator.so')
+fast_evaluator = cdll.LoadLibrary('./fastc/evaluator.so')
 
 
 
@@ -39,6 +39,7 @@ class Simulator:
 
         comb_num = 5-len(self.table.start_community_hand)//2
         all_decks = tuple(it.combinations(deck, comb_num))
+
         n = self.procces_num
         part = len(all_decks)//n
 
@@ -54,7 +55,7 @@ class Simulator:
         players_hands, community_hand = self.cache
         players_wins = [0] * len(players_hands)
         for deck_cards in deck_cards_set:
-            result = tuple(c_evaluator.evaluate_cards(*community_hand, *deck_cards, *player_hand) for player_hand in players_hands)
+            result = tuple(fast_evaluator.evaluate_cards(*community_hand, *deck_cards, *player_hand) for player_hand in players_hands)
             winner_score = min(result)
             for i in range(len(result)):
                 if result[i] == winner_score:
