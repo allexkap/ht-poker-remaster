@@ -26,12 +26,12 @@ class Simulator:
         return set(self.evaluator.rank_map[card[0]]*4+self.evaluator.suit_map[card[1]] for card in cards)
 
 
-    def simulate(self, deck_type: str = "full"):
+    def simulate(self, deck_type= 'full'):
         self.table.generate_deck(deck_type)
         self.table.set_stage_deck(self.table.hands)
         self.table.set_stage_deck(self.table.start_community_hand)
 
-        deck = {*range(51)}
+        deck = {*range(0 if deck_type == 'full' else 24, 51)}
         players_hands = tuple(map(lambda x: self.convert_card(wrap(x, 2)), self.table.hands))
         community_hand = self.convert_card(wrap(self.table.start_community_hand, 2))
         for player_hand in players_hands: deck -= player_hand
@@ -43,6 +43,7 @@ class Simulator:
         n = self.procces_num
         part = len(all_decks)//n
 
+        assert all(len(player_hand) == 4 for player_hand in players_hands)
         self.cache = (players_hands, community_hand)
         args = [all_decks[i*part:(i+1)*part] for i in range(n)]
         with Pool(n) as p:
@@ -55,6 +56,7 @@ class Simulator:
         players_hands, community_hand = self.cache
         players_wins = [0] * len(players_hands)
         for deck_cards in deck_cards_set:
+            assert len(community_hand) + len(deck_cards) == 5
             result = tuple(fast_evaluator.evaluate_cards(*community_hand, *deck_cards, *player_hand) for player_hand in players_hands)
             winner_score = min(result)
             for i in range(len(result)):
