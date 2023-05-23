@@ -1,3 +1,4 @@
+from itertools import combinations
 from textwrap import wrap
 from typing import List
 import itertools as it
@@ -7,7 +8,7 @@ from evaluator.evaluator import Evaluator
 
 
 class Simulator:
-    def __init__(self, players_num: int = 3, simulations_num: int = 10000):
+    def __init__(self, players_num: int = 3, simulations_num: int = 10):
         """
 
         :param players_num: number of players
@@ -39,7 +40,19 @@ class Simulator:
             for player in self.table.players:
                 if player.hand == hands[0]:
                     player.wins_game()
-            self.table.flush_game()
+                    print(f"Player {player.number} wins")
+        self._simulations_num = all_combinations_num
+
+    def evaluate_one_player(self, board: tuple, hand: str):
+        # print(board)
+        all_4_combinations = [hand[2:], hand[:2] + hand[4:], hand[:4] + hand[6:], hand[:6] + hand[8:], hand[:8]]
+        for i in range(len(all_4_combinations)):
+            all_4_combinations[i] = tuple(wrap(all_4_combinations[i], 2))
+        all_4_combinations.sort(key=lambda x: self.evaluator.evaluate_cards(*board, *x))
+        ranks = list(map(lambda x: self.evaluator.evaluate_cards(*board, *x), all_4_combinations))
+        print(all_4_combinations)
+        print(ranks)
+        return all_4_combinations[0], ranks[0]
 
     def play(self, community_hand: str, players_hands):
         """
@@ -48,12 +61,13 @@ class Simulator:
         :param players_hands: cards in players' pockets
         :return: all players' hands with appropriate ranks (the less the rank the better hand is)
         """
+        print(community_hand)
         board = tuple(wrap(community_hand, 2))
         hands = players_hands
         hands.sort(key=lambda x: self.evaluator.evaluate_cards(*board, *x))
         hands = [''.join(hand) for hand in hands]
         return hands
-
+      
     def show_status(self) -> None:
         """
         Show win probability from all simulations

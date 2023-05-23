@@ -1,4 +1,5 @@
 import random
+from itertools import combinations
 from textwrap import wrap
 from typing import List, Union
 
@@ -109,6 +110,16 @@ class Table:
             self._game_stages_iter = iter(game_stages)
         self._current_game_stage = self.start_game_stage
         return len(game_stages)
+
+    def get_all_deck_combinations(self):
+        combinations_len = (10 - len(self.start_community_hand)) // 2
+        all_combinations = combinations(self._deck, combinations_len)
+        all_combinations_num = 0
+        for _ in all_combinations:
+            all_combinations_num += 1
+        all_combinations = combinations(self._deck, combinations_len)
+        return all_combinations, all_combinations_num
+
 
     def new_round(self) -> None:
         """
